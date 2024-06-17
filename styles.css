@@ -18,21 +18,24 @@ h1 {
   text-align: center;
 }
 
-.job-form {
+.job-form,
+.column-form {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
 }
 
 .job-form input,
-.job-form textarea {
+.job-form textarea,
+.column-form input {
   padding: 10px;
   margin: 5px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.job-form button {
+.job-form button,
+.column-form button {
   padding: 10px;
   background-color: #28a745;
   color: #fff;
@@ -41,12 +44,14 @@ h1 {
   cursor: pointer;
 }
 
-.job-form button:hover {
+.job-form button:hover,
+.column-form button:hover {
   background-color: #218838;
 }
 
 .kanban-board {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
 }
 
@@ -56,6 +61,7 @@ h1 {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  margin: 10px 0;
 }
 
 .kanban-column h2 {

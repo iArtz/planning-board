@@ -1,4 +1,12 @@
 let jobs = [];
+let columns = [
+  { id: "wait", name: "Wait" },
+  { id: "qa", name: "QA" },
+  { id: "me", name: "ME" },
+  { id: "cs", name: "CS" },
+  { id: "me2", name: "ME2" },
+  { id: "done", name: "Done" },
+];
 
 function addJob() {
   const title = document.getElementById("job-title").value;
@@ -25,37 +33,64 @@ function clearForm() {
   document.getElementById("job-description").value = "";
 }
 
-function renderJobs() {
-  const waitList = document.getElementById("wait-list");
-  const urgentList = document.getElementById("urgent-list");
-  const doneList = document.getElementById("done-list");
+function addColumn() {
+  const columnName = document.getElementById("column-name").value;
+  if (columnName) {
+    const columnId = columnName.toLowerCase().replace(/\s+/g, "-");
+    columns.push({ id: columnId, name: columnName });
+    renderColumns();
+    document.getElementById("column-name").value = "";
+  } else {
+    alert("Please enter a column name");
+  }
+}
 
-  waitList.innerHTML = "";
-  urgentList.innerHTML = "";
-  doneList.innerHTML = "";
+function renderColumns() {
+  const kanbanBoard = document.getElementById("kanban-board");
+  kanbanBoard.innerHTML = "";
 
-  jobs.forEach((job) => {
-    const jobItem = document.createElement("div");
-    jobItem.className = "job-item";
-    jobItem.draggable = true;
-    jobItem.ondragstart = (e) => dragStart(e, job.id);
-    jobItem.ondragend = (e) => dragEnd(e);
+  columns.forEach((column) => {
+    const columnDiv = document.createElement("div");
+    columnDiv.className = "kanban-column";
+    columnDiv.id = column.id;
+    columnDiv.ondrop = (e) => drop(e, column.id);
+    columnDiv.ondragover = (e) => allowDrop(e);
 
-    jobItem.innerHTML = `
-      <div>
-        <h3>${job.title}</h3>
-        <p>${job.description}</p>
-      </div>
-      <button onclick="editJob('${job.id}')">Edit</button>
+    columnDiv.innerHTML = `
+      <h2>${column.name}</h2>
+      <div class="job-list" id="${column.id}-list"></div>
     `;
 
-    if (job.status === "wait") {
-      waitList.appendChild(jobItem);
-    } else if (job.status === "urgent") {
-      urgentList.appendChild(jobItem);
-    } else if (job.status === "done") {
-      doneList.appendChild(jobItem);
-    }
+    kanbanBoard.appendChild(columnDiv);
+  });
+
+  renderJobs();
+}
+
+function renderJobs() {
+  columns.forEach((column) => {
+    const jobList = document.getElementById(`${column.id}-list`);
+    jobList.innerHTML = "";
+
+    jobs
+      .filter((job) => job.status === column.id)
+      .forEach((job) => {
+        const jobItem = document.createElement("div");
+        jobItem.className = "job-item";
+        jobItem.draggable = true;
+        jobItem.ondragstart = (e) => dragStart(e, job.id);
+        jobItem.ondragend = (e) => dragEnd(e);
+
+        jobItem.innerHTML = `
+          <div>
+            <h3>${job.title}</h3>
+            <p>${job.description}</p>
+          </div>
+          <button onclick="editJob('${job.id}')">Edit</button>
+        `;
+
+        jobList.appendChild(jobItem);
+      });
   });
 }
 
@@ -98,4 +133,4 @@ function drop(event, status) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", renderJobs);
+document.addEventListener("DOMContentLoaded", renderColumns);
