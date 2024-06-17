@@ -1,10 +1,7 @@
 let jobs = [];
 let columns = [
   { id: "wait", name: "Wait" },
-  { id: "qa", name: "QA" },
-  { id: "me", name: "ME" },
-  { id: "cs", name: "CS" },
-  { id: "me2", name: "ME2" },
+  { id: "urgent", name: "Urgent" },
   { id: "done", name: "Done" },
 ];
 
@@ -64,6 +61,8 @@ function renderColumns() {
     kanbanBoard.appendChild(columnDiv);
   });
 
+  createMockJobs();
+
   renderJobs();
 }
 
@@ -74,12 +73,14 @@ function renderJobs() {
 
     jobs
       .filter((job) => job.status === column.id)
-      .forEach((job) => {
+      .forEach((job, index) => {
         const jobItem = document.createElement("div");
         jobItem.className = "job-item";
         jobItem.draggable = true;
         jobItem.ondragstart = (e) => dragStart(e, job.id);
+        jobItem.ondragover = (e) => allowDrop(e);
         jobItem.ondragend = (e) => dragEnd(e);
+        jobItem.ondrop = (e) => dropWithinColumn(e, index, column.id);
 
         jobItem.innerHTML = `
           <div>
@@ -131,6 +132,42 @@ function drop(event, status) {
     job.status = status;
     renderJobs();
   }
+}
+
+function dropWithinColumn(event, index, status) {
+  event.preventDefault();
+  const id = event.dataTransfer.getData("text");
+  const job = jobs.find((job) => job.id === id);
+  const filteredJobs = jobs.filter((job) => job.status === status);
+
+  if (job) {
+    filteredJobs.splice(
+      filteredJobs.findIndex((j) => j.id === job.id),
+      1
+    );
+    filteredJobs.splice(index, 0, job);
+    jobs = [...jobs.filter((job) => job.status !== status), ...filteredJobs];
+    renderJobs();
+  }
+}
+
+function createMockJobs() {
+  mock = [
+    {
+      id: Date.now().toString(),
+      title: "SQXX2406-0001",
+      description: "Ex D",
+      status: "wait",
+    },
+    {
+      id: Date.now().toString(),
+      title: "SQXX2406-0002",
+      description: "3 Phase",
+      status: "wait",
+    },
+  ];
+
+  mock.map((job) => jobs.push(job));
 }
 
 document.addEventListener("DOMContentLoaded", renderColumns);
