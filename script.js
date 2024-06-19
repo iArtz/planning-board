@@ -152,22 +152,30 @@ function dropWithinColumn(event, index, status) {
 }
 
 function createMockJobs() {
-  mock = [
-    {
-      id: Date.now().toString(),
-      title: "SQXX2406-0001",
-      description: "Ex D",
-      status: "wait",
-    },
-    {
-      id: Date.now().toString(),
-      title: "SQXX2406-0002",
-      description: "3 Phase",
-      status: "wait",
-    },
-  ];
+  const motorType = ["Ex D", "Ex E", "3 Phase", "DC", "2 Speed", "Pump"];
+  const template = {
+    id: Date.now().toString(),
+    title: "SQRY2406-",
+    description: "description",
+    status: "status",
+  };
+  const mock = new Array(20);
+  mock.fill(null);
+  mock.map((_, idx) => {
+    const job = {
+      ...template,
+      title: template.title + (idx + 1).toString().padStart("4", "0"),
+      description: motorType[random(0, motorType.length)],
+      status: columns[random(0, columns.length - 1)].id,
+    };
+    jobs.push(job);
+  });
+}
 
-  mock.map((job) => jobs.push(job));
+function random(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 document.addEventListener("DOMContentLoaded", renderColumns);
