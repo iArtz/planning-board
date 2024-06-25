@@ -1,3 +1,5 @@
+import * as css from "./styles.css";
+
 let jobs = [];
 let columns = [
   { id: "wait", name: "Wait" },

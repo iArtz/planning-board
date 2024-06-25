@@ -2,4 +2,4 @@
 
 Drag & Drop job managements Front-end (this is a mocking for prove some concepts 🐶
 
-![demo](./demo.gif)
+![demo](./src/asset/demo.gif)
